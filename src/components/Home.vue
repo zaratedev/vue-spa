@@ -11,7 +11,7 @@
     <v-layout row wrap class="mt-2">
       <v-flex xs12>
         <v-carousel style="cursor: pointer">
-          <v-carousel-item v-for="meetup in meetups" :src="meetup.imageUrl" :key="meetup.id" @click="onLoadMeetup( meetup.id )">
+          <v-carousel-item v-for="meetup in meetups" :src="meetup.imageUrl" :key="meetup.id" @click.native="onLoadMeetup( meetup.id )">
             <div class="title">
               {{ meetup.title }}
             </div>
@@ -29,17 +29,13 @@
 
 <script>
 export default {
-
-  data () {
-    return {
-      meetups: [
-        { imageUrl: 'https://lonelyplanetimages.imgix.net/mastheads/93931301.jpg', id: '1', title: 'Meetup in Mexico City' },
-        { imageUrl: 'http://cdn-image.travelandleisure.com/sites/default/files/styles/1600x1000/public/1508524504/paris-ROOFTOP1017.jpg?itok=arOAqg7r', id: '2', title: 'Meetup in Paris' }
-      ]
+  computed: {
+    meetups () {
+      return this.$store.getters.featuredMeetups
     }
   },
   methods: {
-    onLoadMeetup(id) {
+    onLoadMeetup (id) {
       this.$router.push('/meetups/' + id)
     }
   }
