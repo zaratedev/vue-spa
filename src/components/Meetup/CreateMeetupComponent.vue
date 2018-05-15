@@ -66,6 +66,18 @@
               ></v-text-field>
             </v-flex>
           </v-layout>
+          <v-layout row class="mb-3">
+            <v-flex xs12 sm6 offset-sm3>
+              <h2 class="orange--text">Choose a Data & Time</h2>
+              <v-date-picker v-model="picker"></v-date-picker>
+              <p>{{ picker }}</p>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex xs12 sm6 offset-sm3>
+              <v-time-picker v-model="timer" format="24hr"></v-time-picker>
+            </v-flex>
+          </v-layout>
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
               <v-btn color="orange" class="white--text" :disabled="!valid" @click="submit">Create Meetup</v-btn>
@@ -81,11 +93,25 @@
 export default {
   data () {
     return {
+      picker: new Date().toISOString().substr(0, 10),
+      timer: new Date().toISOString().substr(11, 5),
       valid: true,
       title: '',
       location: '',
       imageUrl: '',
       description: ''
+    }
+  },
+  computed: {
+    submittableDataTime () {
+      const date = new Date(this.picker)
+      if (typeof this.timer === 'string') {
+        const hours = this.timer.match(/^(\d+)/)[1]
+        const minutes = this.timer.match(/:(\d+)/)[1]
+        date.setHours(hours)
+        date.setMinutes(minutes)
+      }
+      return date
     }
   },
   methods: {
@@ -96,7 +122,7 @@ export default {
           location: this.location,
           imageUrl: this.imageUrl,
           description: this.description,
-          date: new Date()
+          date: this.submittableDataTime
         }
 
         this.$store.dispatch('createMeetup', meetupData)

@@ -13,7 +13,7 @@
           </v-card-media>
           <v-card-text>
             <div class="info--text">
-              {{ meetup.date }}
+              {{ meetup.date }} - {{ meetup.location }}
             </div>
             <div class="">
               {{ meetup.description }}
