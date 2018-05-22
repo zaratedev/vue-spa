@@ -17,7 +17,7 @@
               :type="viewpassword ? 'password' : 'text'"
               :append-icon-cb="() => (viewpassword = !viewpassword)"
               ></v-text-field>
-              <v-text-field label="Confirm Password" prepend-icon="lock" v-model="confirmPassword" :rules="namePassword" required
+              <v-text-field label="Confirm Password" prepend-icon="lock" v-model="confirmPassword" :rules="rulesConfirmPassword" required
               :append-icon="p2 ? 'visibility' : 'visibility_off'"
               :type="p2 ? 'password' : 'text'"
               :append-icon-cb="() => (p2 = !p2)"
@@ -50,9 +50,18 @@ export default {
       namePassword: [
         v => !!v || 'Password is required'
       ],
+      rulesConfirmPassword: [
+        v => !!v || 'Password is required',
+        v => this.password !== this.confirmPassword || 'Password do not match'
+      ],
       confirmPassword: '',
       error: false,
       mensajeError: ''
+    }
+  },
+  computed: {
+    comparePasswords () {
+      return this.password !== this.confirmPassword ? 'Password do not match' : true
     }
   }
 }
