@@ -10,23 +10,50 @@
             <v-toolbar-title>Sing up</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form v-model="valid" ref="form" lazy-validation>
-              <v-text-field label="Email" prepend-icon="person" v-model="email" :rules="emailRules" required></v-text-field>
-              <v-text-field label="Password" prepend-icon="lock" v-model="password" :rules="namePassword" required
-              :append-icon="viewpassword ? 'visibility' : 'visibility_off'"
-              :type="viewpassword ? 'password' : 'text'"
-              :append-icon-cb="() => (viewpassword = !viewpassword)"
-              ></v-text-field>
-              <v-text-field label="Confirm Password" prepend-icon="lock" v-model="confirmPassword" :rules="rulesConfirmPassword" required
-              :append-icon="p2 ? 'visibility' : 'visibility_off'"
-              :type="p2 ? 'password' : 'text'"
-              :append-icon-cb="() => (p2 = !p2)"
+            <v-form>
+              <v-text-field
+                label="Email"
+                prepend-icon="person"
+                v-model="email"
+                v-validate="'required|email'"
+                :error-messages="errors.collect('email')"
+                data-vv-name="email"
+                required>
+              </v-text-field>
+              <v-text-field
+                ref="password"
+                name="password"
+                label="Password"
+                data-vv-name="password"
+                data-vv-delay="300"
+                min="6"
+                v-validate="'required|min:6|max:100'"
+                v-model="password"
+                :error-messages="errors.collect('password')"
+                hint="It should be a minimum of 6 characters"
+                prepend-icon="lock"
+                :append-icon="viewpassword ? 'visibility' : 'visibility_off'"
+                :append-icon-cb="() => (viewpassword = !viewpassword)"
+                :type="viewpassword ? 'text' : 'password'">
+              </v-text-field>
+              <v-text-field
+                label="Password confirmation"
+                data-vv-name="password_confirmation"
+                data-vv-delay="300"
+                target= "password"
+                v-validate="'required|confirmed:password'"
+                v-model="confirmPassword"
+                :error-messages="errors.collect('password_confirmation')"
+                prepend-icon="lock"
+                :append-icon="p2 ? 'visibility' : 'visibility_off'"
+                :append-icon-cb="() => (p2 = !p2)"
+                :type="p2 ? 'text' : 'password'"
               ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" :disabled="!valid">Sing up</v-btn>
+            <v-btn color="primary" @click="submit">Sing up</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -42,26 +69,19 @@ export default {
       viewpassword: true,
       p2: true,
       email: '',
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail debe de ser válido'
-      ],
       password: '',
-      namePassword: [
-        v => !!v || 'Password is required'
-      ],
-      rulesConfirmPassword: [
-        v => !!v || 'Password is required',
-        v => this.password !== this.confirmPassword || 'Password do not match'
-      ],
       confirmPassword: '',
       error: false,
       mensajeError: ''
     }
   },
-  computed: {
-    comparePasswords () {
-      return this.password !== this.confirmPassword ? 'Password do not match' : true
+  methods: {
+    submit () {
+      this.$validator.validate().then(result => {
+        if (result) {
+          this.$store.dispatch('signUserUp', {email: this.email, password: this.password})
+        }
+      })
     }
   }
 }
